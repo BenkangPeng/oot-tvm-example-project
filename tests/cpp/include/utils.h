@@ -3,7 +3,6 @@
 
 #include "test-func-registry.h"
 #include <sys/ioctl.h>
-#include <tvm/../../src/node/attr_registry.h>
 #include <tvm/ir/module.h>
 #include <tvm/relax/expr.h>
 #include <tvm/runtime/container/optional.h>
@@ -16,6 +15,8 @@ using std::string;
 using std::vector;
 using tvm::runtime::Array;
 using tvm::runtime::String;
+using tvm::runtime::TVMRetValue;
+#include <tvm/../../src/node/attr_registry.h>
 
 /// @brief Checks whether the given module contains any Relax functions.
 ///
