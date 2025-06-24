@@ -54,8 +54,28 @@ def test_dynamic_shape():
 
     exported_mod.show()
 
+def test_export_module_with_debug():
+    class MyModule(nn.Module):
+        def __init__(self, in_features, out_features):
+            super().__init__()
+            self.in_features = in_features
+            self.out_features = out_features
+            self.linear_relu_stack = nn.ModuleList(
+                [nn.Linear(self.in_features, self.out_features, bias=False), nn.ReLU()])
+        
+        def forward(self, x: nn.Tensor):
+            return self.linear_relu_stack(x)
+        
+    mod = MyModule(10, 10)
+    exported_mod, param_spec = mod.export_tvm(
+        spec={"forward": {"x": nn.spec.Tensor((1, 10), "float32")}},
+        debug=True,
+    )
+    exported_mod.show()
+    print(param_spec)
 
 if __name__ == "__main__":
     test_builtin_module()
     test_custom_module()
     test_dynamic_shape()
+    test_export_module_with_debug()
