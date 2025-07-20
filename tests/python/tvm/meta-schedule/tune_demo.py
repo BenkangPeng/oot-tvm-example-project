@@ -34,12 +34,15 @@ def test_tir_tune():
 
     # Remember to check the variable `$CUDA_VISIBLE_DEVICES` in the terminal
     target = "nvidia/geforce-rtx-4090"
+    # It would be better to use full path instead of relative path due to some cases of environment variables.
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    work_dir = os.path.join(this_dir, "tune_tmp")
     database = ms.tune_tir(
         mod=MyTirModule,
         target=target,
         max_trials_global=32,
         num_trials_per_iter=32,
-        work_dir="./tune_tmp",
+        work_dir=work_dir,
     )
 
     sch = ms.tir_integration.compile_tir(database, MyTirModule, target)

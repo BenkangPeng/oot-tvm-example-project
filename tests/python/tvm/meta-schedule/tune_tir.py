@@ -1,18 +1,7 @@
-
-import torch
-import torch.nn as nn
-import torch.fx as fx
-import torch.nn.functional as F
-
 import numpy as np
-
 import tvm
 import tvm.script.tir as T
-import tvm.script.relax as R
 import tvm.ir.module as IRModule
-import tvm.relax as relax
-
-import tvm.te as te
 
 import os
 os.environ["OPENBLAS_NUM_THREADS"] = "4"
@@ -256,13 +245,15 @@ def test_matmul_blocking_with_shared():
 def test_matmul_meta_schedule():
     import tvm.meta_schedule as ms
     target = "nvidia/geforce-rtx-4090"
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    work_dir = os.path.join(this_dir, "tune_tmp")
 
     database = ms.tune_tir(
         mod=MyModuleMatmul,
         target=target,
         max_trials_global=64,
         num_trials_per_iter=64,
-        work_dir="./tune_tmp",
+        work_dir=work_dir,
     )
     sch = ms.tir_integration.compile_tir(database, MyModuleMatmul, target)
     sch.mod.show()
