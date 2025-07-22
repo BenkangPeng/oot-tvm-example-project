@@ -40,15 +40,18 @@ mod.show()
 
 # relax tuning
 target = tvm.target.Target("nvidia/geforce-rtx-4090")
-TOTAL_TRIALS = 0
+TOTAL_TRIALS = 32
+max_trials_per_task = 1
 this_dir = os.path.dirname(os.path.abspath(__file__))
-work_dir = os.path.join(this_dir, "tune_tmp")
-mod = tvm.relax.get_pipeline("static_shape_tuning", target=target, total_trials=TOTAL_TRIALS, work_dir=work_dir)(mod)
+work_dir = os.path.join(this_dir, "tuning_logs")
+mod = tvm.relax.get_pipeline("static_shape_tuning", target=target, total_trials=TOTAL_TRIALS,
+                             max_trials_per_task=max_trials_per_task,
+                             work_dir=work_dir, cpu_weight_prepack=True)(mod)
 
 mod.show()
 
 
-##############Test Performance########################
+############## Test Performance########################
 ex = tvm.compile(mod, target="cuda")
 dev = tvm.device("cuda", 0)
 vm = tvm.relax.VirtualMachine(ex, dev)
